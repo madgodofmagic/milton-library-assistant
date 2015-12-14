@@ -6,7 +6,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
-add_executable(mla mla.c libstolen.c)
+add_executable(mla mla.c libstolen.c ui.c wiki.c)
 
 find_package(CURL)
 find_package(LibXml2)

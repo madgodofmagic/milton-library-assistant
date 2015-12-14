@@ -1,14 +1,7 @@
 /* begin libstolen.c */
 /* utils for storing curl results in memory blatantly stolen from a curl example */
 /* eye ascii ripped off from the talos principle by some autist on reddit */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-struct MemoryStruct {
-  char *memory;
-  size_t size;
-  pthread_mutex_t * chunk_mutex;
-};
+#include "libstolen.h"
  
 size_t
 WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)

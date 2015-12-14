@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <curses.h>
+#include "mla.h"
 struct MemoryStruct {
   char *memory;
   size_t size;
