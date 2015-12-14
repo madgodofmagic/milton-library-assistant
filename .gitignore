@@ -1,0 +1,11 @@
+cmake/
+CMakeFiles/
+CMakeCache.txt
+bin/
+lib/
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+Makefile
+cmake_install.cmake
