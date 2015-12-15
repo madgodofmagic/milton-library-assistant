@@ -14,4 +14,4 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 set(CMAKE_C_FLAGS_RELEASE "--std=gnu11 -O2 -Wall -Wextra -pedantic")        ## Optimize
 set(CMAKE_C_FLAGS_DEBUG "--std=gnu11 -ggdb -Wall -Wextra -pedantic")        ## Debug
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")  ## Strip binary
-target_link_libraries(mla pthread curl ncurses ${LIBXML2_LIBRARIES})
+target_link_libraries(mla pthread curl ncursesw ${LIBXML2_LIBRARIES})

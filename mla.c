@@ -13,12 +13,15 @@
    DONE: unfucked use of globals
    IN PROGRESS: Parsing wikipedia response (xml done)
 */
+#define _XOPEN_SOURCE_EXTENDED
+#include "ui.h"
 #include <pthread.h>
 #include <curl/curl.h>
-#include "ui.h"
+
 
 
 int main() {
+  setlocale(LC_ALL, "");
   pthread_t ui_thread;
   curl_global_init(CURL_GLOBAL_DEFAULT);
   pthread_create(&ui_thread, NULL , &milton_ui, NULL);

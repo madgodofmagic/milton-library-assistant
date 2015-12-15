@@ -25,13 +25,16 @@ thread_fn extract_wiki_document(void * arg) {
     l_wresult->extracted_text = NULL;
     }
   else {
-    if(result != NULL) 
+    if(result != NULL) { 
       l_wresult->extracted_text = xmlNodeListGetString(doc,
                                                        result
                                                        ->nodesetval
                                                        ->nodeTab[0]
                                                        ->children,
                                                        1);
+      l_wresult->extracted_size = atoi((string) xmlGetProp(result->nodesetval->nodeTab[0], (xmlChar * ) "bytes"));
+
+    }
     else
       l_wresult->extracted_text = NULL;
   }
@@ -80,6 +83,7 @@ thread_fn knowledge_query(void * arg) {
     // swap the pointer to raw xml (should now be a NULL pointer)
     //for the wikimarkup of the article
     l_wquery->chunk->memory = (string) to_parse->extracted_text;
+    l_wquery->chunk->size = to_parse->extracted_size;
     pthread_mutex_unlock(l_wquery->chunk->chunk_mutex);
     // clean up memory allocated for struct passed to extraction thread
     free(to_parse);

@@ -1,10 +1,11 @@
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncursesw/curses.h>
 #include "mla.h"
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 #include <pthread.h>
 #include <curl/curl.h>
-#include <curses.h>
 #include "libstolen.h"
 // struct passed to curl to save query result in memory
 typedef struct WikiQuery {
@@ -16,6 +17,7 @@ typedef struct WikiQuery {
 typedef struct WikiResult {
   struct MemoryStruct * raw_result;
   xmlChar * extracted_text;
+  int extracted_size;
   } WikiResult;
 thread_fn extract_wiki_document(void * arg);
 thread_fn knowledge_query(void * arg);

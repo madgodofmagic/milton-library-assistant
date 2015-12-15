@@ -2,28 +2,28 @@
 #include "ui.h"
 
 void blink(WINDOW * win) {
-  mvwprintw(win,0,0,"%s",eye);
+  mvwprintw(win,0,0,"%ls",weye);
   wrefresh(win);
   usleep(200000);
-  mvwprintw(win,0,0,"%s",eye2);
+  mvwprintw(win,0,0,"%ls",weye2);
   wrefresh(win);
   usleep(200000);
-  mvwprintw(win,0,0,"%s",eye3);
+  mvwprintw(win,0,0,"%ls",weye3);
   wrefresh(win);
   usleep(200000);
-  mvwprintw(win,0,0,"%s",eye2);
+  mvwprintw(win,0,0,"%ls",weye2);
   wrefresh(win);
   usleep(200000);
-  mvwprintw(win,0,0,"%s",eye);
+  mvwprintw(win,0,0,"%ls",weye);
   wrefresh(win);
 }
 void greet_and_prompt(WINDOW * win) {
   wclear(win);
   wrefresh(win);
-  mvwprintw(win,0,0,"Milton Library Assistant Version 2. ");
+  mvwprintw(win,0,0,"%ls",greet);
   wrefresh(win);
   usleep(200000);
-  mvwprintw(win,2,0,"$ ");
+  mvwprintw(win,2,0,"%ls",prompt);
   wrefresh(win);
   wmove(win, 2, 3);
   wrefresh(win);
@@ -33,7 +33,11 @@ thread_fn milton_ui(__attribute__((unused)) void * arg) {
   pthread_t worker_thread;
   WINDOW *top, *bottom;
   int wl1, wl2, wc1, wc2;
-
+  mbstowcs(weye, (string) eye, eye_len);
+  mbstowcs(weye2, (string) eye2, eye2_len);
+  mbstowcs(weye3, (string) eye3, eye3_len);
+  mbstowcs(greet, "Milton Library Assistant Version 2.", sizeof(greet));
+  mbstowcs(prompt, "$ ", sizeof(prompt));
   initscr();
   cbreak();
   noecho();
@@ -72,12 +76,16 @@ thread_fn milton_ui(__attribute__((unused)) void * arg) {
     if(chunk.memory != NULL) {
       wclear(bottom);
       wrefresh(bottom);
-      wprintw(bottom,"%s",chunk.memory);
+      wchar_t * expanded_extracted_result = malloc(sizeof(wchar_t) * chunk.size);
+      mbstowcs(expanded_extracted_result, chunk.memory, chunk.size);
+      
+      wprintw(bottom,"%ls",expanded_extracted_result);
       wrefresh(bottom);
       getch();
       // finally clean up the xmlString
       xmlFree((xmlChar *) chunk.memory);
-      }
+      free(expanded_extracted_result);
+    }
     pthread_mutex_unlock(chunk.chunk_mutex);
     pthread_mutex_destroy(chunk.chunk_mutex);
     free(chunk.chunk_mutex);
