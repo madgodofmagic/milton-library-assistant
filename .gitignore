@@ -9,3 +9,6 @@ GSYMS
 GTAGS
 Makefile
 cmake_install.cmake
+*.xml
+*.wiki
+*.size
