@@ -6,9 +6,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
-add_executable(mla mla.c libstolen.c ui.c mpc/mpc.c wiki.c)
-add_executable(parser-test mpc/mpc.c parser-test.c)
-add_executable(parser-defaulttest mpc/mpc.c parser-defaulttest.c)
+add_executable(mla mla.c libstolen.c ui.c wiki.c)
 find_package(CURL)
 find_package(LibXml2)
 include_directories(${LIBXML2_INCLUDE_DIR})
