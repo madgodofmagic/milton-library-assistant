@@ -8,20 +8,21 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
 int main() {
 
   pcre2_code * re;
   PCRE2_SPTR pattern;
   PCRE2_SPTR subject;
   PCRE2_SPTR name_table;
-//  int crlf_is_newline;
+  //  int crlf_is_newline;
   int errornumber;
-//  int find_all = 0;
+  //  int find_all = 0;
   int i;
   int namecount;
   int name_entry_size;
   int rc;
-//  int utf8;
+  //  int utf8;
   char *addr;
   int fd;
   struct stat sb;
@@ -37,10 +38,10 @@ int main() {
   size_t subject_length;
   pcre2_match_data *match_data;
 
-  pattern = (PCRE2_SPTR) ".*'''(?<title>.*?)'''(?<summary>.*?)==.+";
-//  pattern = (PCRE2_SPTR) "(?<aaa>.+)";
+  pattern = (PCRE2_SPTR) "(?<summary>'''(?<title>.*?)'''.*?)==";
+  //  pattern = (PCRE2_SPTR) "(?<aaa>.+)";
   //subject = (PCRE2_SPTR) "aaatest123bc";
-  fd = open("satan.ascii.wiki",O_RDONLY);
+  fd = open("satan.wiki",O_RDONLY);
   offset = 0;
   pa_offset = offset & ~(sysconf(_SC_PAGE_SIZE) - 1);
   /* offset for mmap() must be page aligned */
