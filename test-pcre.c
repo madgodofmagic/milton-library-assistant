@@ -101,6 +101,7 @@ int main() {
         }
       pcre2_match_data_free(match_data);   /* Release memory used for the match */
       pcre2_code_free(re);                 /* data and the compiled pattern. */
+      munmap((void *)subject,length);
       return 1;
     }
   ovector = pcre2_get_ovector_pointer(match_data);
