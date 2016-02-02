@@ -72,6 +72,7 @@ thread_fn milton_ui(__attribute__((unused)) void * arg) {
     WikiQuery wquery = {.chunk = &chunk,.arg = buffer};
     pthread_create(&worker_thread,NULL, &knowledge_query, &wquery);
     pthread_join(worker_thread,NULL);
+    
     pthread_mutex_lock(chunk.chunk_mutex);
     if(chunk.memory != NULL) {
       wclear(bottom);
@@ -83,7 +84,8 @@ thread_fn milton_ui(__attribute__((unused)) void * arg) {
       wrefresh(bottom);
       getch();
       // finally clean up the xmlString
-      xmlFree((xmlChar *) chunk.memory);
+//      xmlFree((xmlChar *) chunk.memory);
+      free(chunk.memory);
       free(expanded_extracted_result);
     }
     pthread_mutex_unlock(chunk.chunk_mutex);

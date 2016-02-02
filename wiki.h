@@ -24,9 +24,9 @@ typedef struct WikiResult {
   int extracted_size;
 } WikiResult;
 typedef struct WikiSummary {
-  xmlChar * unparsed_text;
+  char * unparsed_text;
   unsigned long unparsed_size;
-  xmlChar * parsed_text;
+  unsigned char * parsed_text;
   unsigned long parsed_size;
 } WikiSummary;
 thread_fn extract_raw_summary(void * arg);
