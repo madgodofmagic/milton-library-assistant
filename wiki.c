@@ -52,8 +52,6 @@ thread_fn extract_raw_summary(void * arg) {
   if (re_rc < 0)
     {
       switch(re_rc)
-        // some error here while testing, actually check the return code for what error it is at some point
-        // (if it's mangled unicode i'm going to be very angry at shittypedia.)
         {
         case PCRE2_ERROR_NOMATCH: break;
           /*
@@ -201,13 +199,15 @@ thread_fn knowledge_query(void * arg) {
 //    pthread_mutex_unlock(l_wquery->chunk->chunk_mutex);
     pthread_t summary_extraction_thread;
     pthread_create(&summary_extraction_thread, NULL, &extract_raw_summary, w_summary);
-    pthread_join(summary_extraction_thread, NULL);
+    int * summary_status;
+    pthread_join(summary_extraction_thread, (void **) &summary_status);
     pthread_mutex_lock(l_wquery->chunk->chunk_mutex);
     l_wquery->chunk->memory = w_summary->parsed_text;
     l_wquery->chunk->size = w_summary->parsed_size;
     free(w_summary->unparsed_text);
     free(w_summary);
     pthread_mutex_unlock(l_wquery->chunk->chunk_mutex);
+    if(summary_status != NULL) free(summary_status); // ignore this anyway, but deallocate if there was an error
     
     
     // clean up memory allocated for struct passed to text extraction thread
