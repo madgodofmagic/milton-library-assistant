@@ -10,14 +10,11 @@ thread_fn extract_raw_summary(void * arg) {
   pcre2_code * re_re;
   PCRE2_SPTR re_pattern;
   PCRE2_SPTR re_subject;
-  PCRE2_SPTR re_name_table;
   int re_errornumber;
   int re_namecount;
-  int re_name_entry_size;
   int re_rc;
   char * re_addr;
   PCRE2_SIZE re_erroroffset;
-  PCRE2_SIZE * re_ovector;
   size_t re_subject_length;
   pcre2_match_data * re_match_data;
   re_pattern = (PCRE2_SPTR) "(?<summary>'''(?<title>.*?)'''.*?)==";
@@ -35,13 +32,10 @@ thread_fn extract_raw_summary(void * arg) {
   if(re_re == NULL) {
     PCRE2_UCHAR buffer[MAX_BUFFER];
     pcre2_get_error_message(re_errornumber, buffer, sizeof(buffer));
-    //printf("pcre2 err at %d: %s\n", (int)erroroffset, buffer);
 
     allocate_errorstatus_and_exit_pthread(re_errornumber);
   }
   re_match_data = pcre2_match_data_create_from_pattern(re_re,NULL);
-// SEGFAULT below
-// FIXED by PCRE2_UTF flag -.-'
   re_rc = pcre2_match(re_re,
                       re_subject,
                       re_subject_length,
@@ -64,7 +58,6 @@ thread_fn extract_raw_summary(void * arg) {
 
       allocate_errorstatus_and_exit_pthread(re_rc);
     }
-  re_ovector = pcre2_get_ovector_pointer(re_match_data);
 
   if (re_rc == 0){
     pcre2_match_data_free(re_match_data);
@@ -75,37 +68,19 @@ thread_fn extract_raw_summary(void * arg) {
                            re_re,                   /* the compiled pattern */
                            PCRE2_INFO_NAMECOUNT, /* get the number of named substrings */
                            &re_namecount);          /* where to put the answer */
-int urmom;
+
   if (re_namecount <= 0) {
     allocate_errorstatus_and_exit_pthread(re_namecount);
-    urmom = -1;
   } else
     {
-      //    PCRE2_SPTR tabptr;
-  
-
-      /* Before we can access the substrings, we must extract the table for
-         translating names to numbers, and the size of each entry in the table. */
-
-      (void)pcre2_pattern_info(
-                               re_re,                       /* the compiled pattern */
-                               PCRE2_INFO_NAMETABLE,     /* address of the table */
-                               &re_name_table);             /* where to put the answer */
-
-      (void)pcre2_pattern_info(
-                               re_re,                       /* the compiled pattern */
-                               PCRE2_INFO_NAMEENTRYSIZE, /* size of each entry in the table */
-                               &re_name_entry_size);        /* where to put the answer */
-
-
       pcre2_substring_length_byname(re_match_data, (PCRE2_SPTR) "summary",&l_wsummary->parsed_size);
       l_wsummary->parsed_size++; // account for null-termination
       l_wsummary->parsed_text = malloc(l_wsummary->parsed_size * sizeof(unsigned char));
-      urmom = pcre2_substring_copy_byname(re_match_data,(PCRE2_SPTR) "summary",  l_wsummary->parsed_text,&l_wsummary->parsed_size);
+      pcre2_substring_copy_byname(re_match_data,(PCRE2_SPTR) "summary",  l_wsummary->parsed_text,&l_wsummary->parsed_size);
     }
   pcre2_match_data_free(re_match_data);  /* Release the memory that was used */
   pcre2_code_free(re_re);                /* for the match data and the pattern. */
-  pthread_exit(urmom);
+  pthread_exit(NULL);
 }
 // extract article text from xml using libxml2.
 // most of this crap allocates memory without any clear indication
@@ -201,13 +176,20 @@ thread_fn knowledge_query(void * arg) {
     pthread_create(&summary_extraction_thread, NULL, &extract_raw_summary, w_summary);
     int * summary_status;
     pthread_join(summary_extraction_thread, (void **) &summary_status);
-    pthread_mutex_lock(l_wquery->chunk->chunk_mutex);
-    l_wquery->chunk->memory = w_summary->parsed_text;
-    l_wquery->chunk->size = w_summary->parsed_size;
-    free(w_summary->unparsed_text);
-    free(w_summary);
-    pthread_mutex_unlock(l_wquery->chunk->chunk_mutex);
-    if(summary_status != NULL) free(summary_status); // ignore this anyway, but deallocate if there was an error
+// Deallocate memory used for return code from the child thread and the struct passed as its argument, and DON'T touch unparsed version
+    if(summary_status != NULL) {    
+      free(summary_status);
+      free(w_summary);
+    }
+    else {
+      // looks like everything has gone ok, point to the summary and free the memory used for full article text
+      pthread_mutex_lock(l_wquery->chunk->chunk_mutex);
+      l_wquery->chunk->memory = (char *) w_summary->parsed_text;
+      l_wquery->chunk->size = w_summary->parsed_size;
+      free(w_summary->unparsed_text);
+      free(w_summary);
+      pthread_mutex_unlock(l_wquery->chunk->chunk_mutex);
+    }
     
     
     // clean up memory allocated for struct passed to text extraction thread
