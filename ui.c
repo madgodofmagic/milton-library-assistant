@@ -71,8 +71,14 @@ thread_fn milton_ui(__attribute__((unused)) void * arg) {
     pthread_mutex_init(chunk.chunk_mutex, NULL);
     WikiQuery wquery = {.chunk = &chunk,.arg = buffer};
     pthread_create(&worker_thread,NULL, &knowledge_query, &wquery);
-    pthread_join(worker_thread,NULL);
-    
+    struct timespec now;
+    struct timespec wikiquery_timeout; 
+    for(;;) {
+      clock_gettime(CLOCK_REALTIME,&now);
+      wikiquery_timeout = (struct timespec) {.tv_sec = now.tv_sec + 2, .tv_nsec = now.tv_nsec};
+      blink(top);
+      if (pthread_timedjoin_np(worker_thread, NULL, &wikiquery_timeout) == 0) break;
+    }
     pthread_mutex_lock(chunk.chunk_mutex);
     if(chunk.memory != NULL) {
       wclear(bottom);

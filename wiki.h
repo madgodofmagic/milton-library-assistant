@@ -1,4 +1,6 @@
+#ifndef _XOPEN_SOURCE_EXTENDED
 #define _XOPEN_SOURCE_EXTENDED
+#endif
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <ncursesw/curses.h>
 #include "mla.h"

@@ -8,7 +8,7 @@ A gimmick tool/game I'm writing to 1. practice C 2. make something cool based on
 
 At the moment prints prompt, blinks, looks up stuff on Wikipedia and returns unparsed articles. Very early stages, really. You have to match an exact title (including capital letters) to get any output, and then it's a jumbled mess of raw WikiMarkup.
 - UPDATE: Now it uses the official Wikipedia API, demangles the xml and extracts what has been experimentally proven to be the summary of the article (I guessed until it worked for most ~*mature~* articles). Still raw WikiMarkup tho.
-
+- UPDATE2: now you do really need to use linux, due to usage of pthread_timedjoin_np and no neat replacement for that for other POSIX systems. But now it blinks when you wait for the response, so it was all worth it.
 #Prep
 
 ##Dependencies

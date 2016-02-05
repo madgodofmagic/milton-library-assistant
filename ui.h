@@ -1,4 +1,5 @@
 #define _XOPEN_SOURCE_EXTENDED
+#define _GNU_SOURCE
 #include <ncursesw/curses.h>
 #include <unistd.h>
 #include <locale.h>
